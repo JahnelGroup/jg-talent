@@ -30,8 +30,26 @@
 
   <div class="container">
     <h1 class="text-center mt-4">Talent Finder</h1>
-    <div class="text-center mt-3">
-      <input type="text" id="searchBar" class="form-control w-50 mx-auto" placeholder="Search by name, role, or skill...">
+    <div class="search-section">
+      <div class="search-bar-container">
+        <input type="text" id="searchBar" class="form-control" placeholder="Search by name, role, or skill...">
+        <div class="filter-buttons">
+          <div class="dropdown">
+            <button class="btn btn-filter" type="button" id="roleFilter">Role</button>
+            <div class="dropdown-content" id="roleDropdown"></div>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-filter" type="button" id="skillsFilter">Skills</button>
+            <div class="dropdown-content" id="skillsDropdown"></div>
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-filter" type="button" id="locationFilter">Location</button>
+            <div class="dropdown-content" id="locationDropdown"></div>
+          </div>
+        </div>
+      </div>
+      <div id="selectedFilters" class="selected-filters"></div>
+      <button id="viewAllTalents" class="btn btn-view-all" style="display: none;">View All Talents</button>
     </div>
     <div id="profileContainer" class="row mt-4">
       <!-- Profiles will be dynamically added here -->
