@@ -112,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function removeFilter(type, value) {
     activeFilters[type] = activeFilters[type].filter(v => v !== value);
+    // Uncheck the corresponding checkbox
+    const dropdown = dropdowns[type];
+    const item = dropdown.querySelector(`[data-value="${value}"]`);
+    if (item) {
+      item.classList.remove('selected');
+    }
     renderFilterPills();
     applyFilters();
   }
@@ -209,6 +215,12 @@ document.addEventListener("DOMContentLoaded", () => {
       skills: [],
       location: []
     };
+    // Uncheck all checkboxes
+    Object.values(dropdowns).forEach(dropdown => {
+      dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+    });
     renderFilterPills();
     applyFilters();
   });
