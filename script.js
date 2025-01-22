@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Toggle dropdown visibility
   Object.entries(filterButtons).forEach(([key, button]) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
       closeAllDropdowns();
       dropdowns[key].classList.toggle("show");
     });
@@ -35,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Close dropdowns when clicking outside
   document.addEventListener("click", (e) => {
-    if (!e.target.matches(".btn-filter")) {
+    if (!e.target.closest('.dropdown') && !e.target.matches(".btn-filter")) {
       closeAllDropdowns();
     }
   });
@@ -58,28 +59,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeFilters() {
     const uniqueValues = {
-      role: [...new Set(profiles.map(p => p.Role))],
-      skills: [...new Set(profiles.flatMap(p => p.Tags.split(",")))],
-      location: [...new Set(profiles.map(p => p.Location))]
+      role: [...new Set(profiles.map(p => p.Role))].sort(),
+      skills: [...new Set(profiles.flatMap(p => p.Tags.split(",").map(s => s.trim())))].sort(),
+      location: [...new Set(profiles.map(p => p.Location))].sort()
     };
 
     // Populate dropdowns
     Object.entries(uniqueValues).forEach(([key, values]) => {
       const dropdown = dropdowns[key];
       dropdown.innerHTML = values
-        .map(value => `<div class="dropdown-item" data-type="${key}" data-value="${value.trim()}">${value.trim()}</div>`)
+        .map(value => `
+          <div class="dropdown-item ${activeFilters[key].includes(value) ? 'selected' : ''}" data-type="${key}" data-value="${value.trim()}">
+            <div class="checkbox-wrapper">
+              <div class="custom-checkbox"></div>
+            </div>
+            ${value.trim()}
+          </div>
+        `)
         .join("");
     });
 
-    // Add click handlers for dropdown items
+    // Update dropdown click handlers
     Object.values(dropdowns).forEach(dropdown => {
       dropdown.addEventListener("click", (e) => {
-        if (e.target.classList.contains("dropdown-item")) {
-          const { type, value } = e.target.dataset;
-          addFilter(type, value);
+        const item = e.target.closest('.dropdown-item');
+        if (item) {
+          const { type, value } = item.dataset;
+          toggleFilter(type, value, item);
+          e.stopPropagation(); // Prevent dropdown from closing
         }
       });
     });
+  }
+
+  function toggleFilter(type, value, item) {
+    if (activeFilters[type].includes(value)) {
+      removeFilter(type, value);
+      item.classList.remove('selected');
+    } else {
+      addFilter(type, value);
+      item.classList.add('selected');
+    }
   }
 
   function addFilter(type, value) {
